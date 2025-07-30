@@ -1,0 +1,31 @@
+# i-sight Flask Integrated System Requirements
+# Core dependencies for computer vision and web interface
+
+# Flask and web framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+
+# Computer Vision
+opencv-python==4.8.1.78
+Pillow==10.0.1
+numpy==1.24.3
+
+# Machine Learning and AI
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+
+# Voice and Audio
+pyttsx3==2.90
+pywin32==306; sys_platform == "win32"
+
+# HTTP and API
+requests==2.31.0
+
+# Utilities
+python-dateutil==2.8.2
+
+# Optional: For enhanced performance
+# torch==2.0.1+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html
+# torchvision==0.15.2+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html 

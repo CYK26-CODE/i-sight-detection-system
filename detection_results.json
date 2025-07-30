@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-07-30T00:52:44.839270",
+  "fps": 9.368836929275396,
+  "frame_count": 240,
+  "summary": {
+    "total_faces": 1,
+    "total_vehicles": 0,
+    "total_traffic_signs": 0,
+    "active_zones": [
+      "Slight Right"
+    ]
+  },
+  "detections": {
+    "faces": [
+      {
+        "type": "face",
+        "confidence": 0.8,
+        "bbox": {
+          "x": 294,
+          "y": 138,
+          "width": 199,
+          "height": 199
+        },
+        "center": {
+          "x": 393,
+          "y": 237
+        },
+        "zone": "Slight Right",
+        "zone_index": 3
+      }
+    ],
+    "vehicles": [],
+    "traffic_signs": []
+  },
+  "performance": {
+    "target_fps": 30.0,
+    "current_fps": 9.368836929275396,
+    "lightweight_mode": true
+  }
+}

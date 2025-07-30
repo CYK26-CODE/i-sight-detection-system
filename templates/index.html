@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i-sight Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .video-container {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .video-feed {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #000;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Accessibility Tab Styles */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Accessibility Controls */
+        .accessibility-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .accessibility-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .accessibility-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .accessibility-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .toggle-container {
+            margin: 20px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 120px;
+            height: 60px;
+            background: #ccc;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active {
+            background: #56ab2f;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(60px);
+        }
+
+        .toggle-label {
+            display: block;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .toggle-status {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #666;
+        }
+
+        .accessibility-btn {
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 10px;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .accessibility-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .accessibility-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .accessibility-btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .accessibility-btn.success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .accessibility-btn.danger {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .accessibility-btn.warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .accessibility-btn.info {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .accessibility-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .voice-feedback {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            z-index: 1000;
+            max-width: 400px;
+            display: none;
+        }
+
+        .voice-feedback.show {
+            display: block;
+        }
+
+        .accessibility-status {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .accessibility-status h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-item h5 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .status-item p {
+            color: #666;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #56ab2f;
+            box-shadow: 0 0 10px rgba(86, 171, 47, 0.5);
+        }
+
+        .status-offline {
+            background: #ff416c;
+            box-shadow: 0 0 10px rgba(255, 65, 108, 0.5);
+        }
+
+        .detection-zones {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .zone {
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .zone-active {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .zone-inactive {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .log-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .log-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .log-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .log-error {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        }
+
+        .notification.error {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        }
+
+        .notification.warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .detection-zones {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 i-sight Detection System</h1>
+            <p>Real-time Computer Vision with Voice Feedback</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('main')">📊 Main Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('accessibility')">♿ Accessibility Mode</button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Tab -->
+        <div id="main-tab" class="tab-content active">
+            <div class="dashboard">
+            <div class="card video-container">
+                <h2>📹 Live Video Feed</h2>
+                <img id="videoFeed" class="video-feed" src="/video-feed" alt="Live video feed">
+                <div class="controls">
+                    <button id="startBtn" class="btn btn-success" onclick="startDetection()">
+                        🚀 Start Detection
+                    </button>
+                    <button id="stopBtn" class="btn btn-danger" onclick="stopDetection()" disabled>
+                        🛑 Stop Detection
+                    </button>
+                    <button id="voiceTestBtn" class="btn btn-warning" onclick="testVoice()">
+                        🔊 Test Voice
+                    </button>
+                    <button id="voiceLogBtn" class="btn btn-secondary" onclick="showVoiceLog()">
+                        📝 Voice Log
+                    </button>
+                    <button id="forceSpeakBtn" class="btn btn-info" onclick="showForceSpeak()">
+                        🎤 Force Speak
+                    </button>
+                    <button id="screenshotBtn" class="btn btn-primary" onclick="takeScreenshot()">
+                        📸 Screenshot
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 System Status</h2>
+                <div id="systemStatus">
+                    <p><span class="status-indicator status-offline"></span>Detection: <span id="detectionStatus">Stopped</span></p>
+                    <p><span class="status-indicator status-offline"></span>Camera: <span id="cameraStatus">Disconnected</span></p>
+                    <p><span class="status-indicator status-offline"></span>Voice: <span id="voiceStatus">Disabled</span></p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="faceCount">0</div>
+                        <div class="stat-label">Faces</div>
+                </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="vehicleCount">0</div>
+                        <div class="stat-label">Vehicles</div>
+                </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="trafficSignCount">0</div>
+                        <div class="stat-label">Traffic Signs</div>
+                </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="fpsValue">0.0</div>
+                        <div class="stat-label">FPS</div>
+                </div>
+                </div>
+                </div>
+                
+            <div class="card">
+                <h2>🎯 Detection Zones</h2>
+                <div class="detection-zones" id="detectionZones">
+                    <div class="zone zone-inactive">Far Left</div>
+                    <div class="zone zone-inactive">Slight Left</div>
+                    <div class="zone zone-inactive">Center</div>
+                    <div class="zone zone-inactive">Slight Right</div>
+                    <div class="zone zone-inactive">Far Right</div>
+                </div>
+                
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry log-info">System initialized. Ready to start detection.</div>
+            </div>
+        </div>
+        
+            <div class="card">
+                <h2>📈 Real-time Data</h2>
+                <div id="realTimeData">
+                    <p><strong>Frame:</strong> <span id="frameNumber">0</span></p>
+                    <p><strong>Processing Time:</strong> <span id="processingTime">0.000</span>s</p>
+                    <p><strong>Last Update:</strong> <span id="lastUpdate">Never</span></p>
+                </div>
+                
+                <div id="detectionDetails">
+                    <h3>Detection Details</h3>
+                    <div id="faceDetails"></div>
+                    <div id="vehicleDetails"></div>
+                    <div id="trafficSignDetails"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessibility Tab -->
+        <div id="accessibility-tab" class="tab-content">
+            <div class="accessibility-status">
+                <h4>♿ Accessibility Mode - Voice-Controlled Interface</h4>
+                <p>Large buttons and voice feedback for easy navigation</p>
+            </div>
+
+            <div class="accessibility-controls">
+                <!-- Detection Control -->
+                <div class="accessibility-card">
+                    <h3>🎯 Detection System</h3>
+                    <div class="toggle-container">
+                        <div id="detectionToggle" class="toggle-switch" onclick="toggleDetection()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span class="toggle-label">Detection System</span>
+                        <div class="toggle-status" id="detectionStatus">OFF</div>
+                    </div>
+                    <button class="accessibility-btn success" onclick="startDetectionAccessibility()">
+                        🚀 START DETECTION
+                    </button>
+                    <button class="accessibility-btn danger" onclick="stopDetectionAccessibility()">
+                        🛑 STOP DETECTION
+                    </button>
+                </div>
+
+                <!-- Voice Control -->
+                <div class="accessibility-card">
+                    <h3>🔊 Voice System</h3>
+                    <div class="toggle-container">
+                        <div id="voiceToggle" class="toggle-switch" onclick="toggleVoice()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span class="toggle-label">Voice Feedback</span>
+                        <div class="toggle-status" id="voiceStatus">OFF</div>
+                    </div>
+                    <button class="accessibility-btn warning" onclick="testVoiceAccessibility()">
+                        🔊 TEST VOICE
+                    </button>
+                    <button class="accessibility-btn info" onclick="showVoiceLogAccessibility()">
+                        📝 VOICE LOG
+                    </button>
+                </div>
+
+                <!-- Camera Control -->
+                <div class="accessibility-card">
+                    <h3>📹 Camera System</h3>
+                    <div class="toggle-container">
+                        <div id="cameraToggle" class="toggle-switch" onclick="toggleCamera()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span class="toggle-label">Camera Feed</span>
+                        <div class="toggle-status" id="cameraStatus">OFF</div>
+                    </div>
+                    <button class="accessibility-btn primary" onclick="takeScreenshotAccessibility()">
+                        📸 SCREENSHOT
+                    </button>
+                    <button class="accessibility-btn info" onclick="forceSpeakAccessibility()">
+                        🎤 FORCE SPEAK
+                    </button>
+                </div>
+
+                <!-- System Status -->
+                <div class="accessibility-card">
+                    <h3>📊 System Status</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <h5>Faces Detected</h5>
+                            <p id="accessibilityFaceCount">0</p>
+                        </div>
+                        <div class="status-item">
+                            <h5>Vehicles Detected</h5>
+                            <p id="accessibilityVehicleCount">0</p>
+                        </div>
+                        <div class="status-item">
+                            <h5>Traffic Signs</h5>
+                            <p id="accessibilityTrafficSignCount">0</p>
+                        </div>
+                        <div class="status-item">
+                            <h5>System FPS</h5>
+                            <p id="accessibilityFPS">0.0</p>
+                        </div>
+                    </div>
+                    <button class="accessibility-btn primary" onclick="refreshStatusAccessibility()">
+                        🔄 REFRESH STATUS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Voice Feedback Display -->
+            <div id="voiceFeedback" class="voice-feedback">
+                <div id="voiceFeedbackText"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        let detectionRunning = false;
+        let updateInterval;
+        let currentTab = 'main';
+        let voiceFeedbackEnabled = true;
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            startStatusUpdates();
+        });
+
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update status indicators
+                    document.getElementById('detectionStatus').textContent = 
+                        data.detection_running ? 'Running' : 'Stopped';
+                    document.getElementById('cameraStatus').textContent = 
+                        data.camera_connected ? 'Connected' : 'Disconnected';
+                    document.getElementById('voiceStatus').textContent = 
+                        data.voice_enabled ? 'Enabled' : 'Disabled';
+
+                    // Update status indicators
+                    updateStatusIndicator('detectionStatus', data.detection_running);
+                    updateStatusIndicator('cameraStatus', data.camera_connected);
+                    updateStatusIndicator('voiceStatus', data.voice_enabled);
+
+                    // Update stats
+                    document.getElementById('faceCount').textContent = data.face_count || 0;
+                    document.getElementById('vehicleCount').textContent = data.vehicle_count || 0;
+                    document.getElementById('trafficSignCount').textContent = data.traffic_sign_count || 0;
+                    document.getElementById('fpsValue').textContent = (data.fps || 0).toFixed(1);
+
+                    // Update button states
+                    document.getElementById('startBtn').disabled = data.detection_running;
+                    document.getElementById('stopBtn').disabled = !data.detection_running;
+
+                    detectionRunning = data.detection_running;
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                    addLogEntry('Error updating status: ' + error.message, 'error');
+                });
+        }
+
+        function updateStatusIndicator(elementId, isOnline) {
+            const element = document.getElementById(elementId);
+            const indicator = element.previousElementSibling;
+            
+            if (isOnline) {
+                indicator.className = 'status-indicator status-online';
+                } else {
+                indicator.className = 'status-indicator status-offline';
+            }
+        }
+
+        function startDetection() {
+            addLogEntry('Starting detection system...', 'info');
+            
+            fetch('/api/start-detection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Detection started successfully!', 'success');
+                    addLogEntry('Detection system started', 'success');
+                    updateStatus();
+                } else {
+                    showNotification('Failed to start detection: ' + data.message, 'error');
+                    addLogEntry('Failed to start detection: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error starting detection: ' + error.message, 'error');
+                addLogEntry('Error starting detection: ' + error.message, 'error');
+            });
+        }
+
+        function stopDetection() {
+            addLogEntry('Stopping detection system...', 'info');
+            
+            fetch('/api/stop-detection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Detection stopped successfully!', 'success');
+                    addLogEntry('Detection system stopped', 'success');
+                    updateStatus();
+                } else {
+                    showNotification('Failed to stop detection: ' + data.message, 'error');
+                    addLogEntry('Failed to stop detection: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error stopping detection: ' + error.message, 'error');
+                addLogEntry('Error stopping detection: ' + error.message, 'error');
+            });
+        }
+
+        function testVoice() {
+            addLogEntry('Testing voice system...', 'info');
+            
+            fetch('/api/voice-test')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Voice test initiated!', 'success');
+                    addLogEntry('Voice test successful', 'success');
+                } else {
+                    showNotification('Voice test failed: ' + data.message, 'warning');
+                    addLogEntry('Voice test failed: ' + data.message, 'warning');
+                }
+            })
+            .catch(error => {
+                showNotification('Error testing voice: ' + error.message, 'error');
+                addLogEntry('Error testing voice: ' + error.message, 'error');
+            });
+        }
+
+        function showVoiceLog() {
+            addLogEntry('Loading voice log...', 'info');
+            
+            fetch('/api/voice-log')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let logContent = '<h3>📝 Voice Log (Last ' + data.recent_count + ' entries)</h3>';
+                    logContent += '<div class="voice-log-entries">';
+                    data.log_entries.forEach(entry => {
+                        logContent += '<div class="log-entry">' + entry.trim() + '</div>';
+                    });
+                    logContent += '</div>';
+                    
+                    // Show in log container
+                    document.getElementById('logContainer').innerHTML = logContent;
+                    addLogEntry('Voice log loaded: ' + data.recent_count + ' entries', 'info');
+                } else {
+                    showNotification('Voice log failed: ' + data.message, 'warning');
+                    addLogEntry('Voice log failed: ' + data.message, 'warning');
+                }
+            })
+            .catch(error => {
+                showNotification('Error loading voice log: ' + error.message, 'error');
+                addLogEntry('Error loading voice log: ' + error.message, 'error');
+            });
+        }
+
+        function showForceSpeak() {
+            const message = prompt('Enter message to force speak:');
+            if (message && message.trim()) {
+                addLogEntry('Force speaking: ' + message, 'info');
+                
+                fetch('/api/voice-force-speak', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message.trim() })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Force speak initiated!', 'success');
+                        addLogEntry('Force speak successful: ' + message, 'success');
+                    } else {
+                        showNotification('Force speak failed: ' + data.message, 'warning');
+                        addLogEntry('Force speak failed: ' + data.message, 'warning');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error force speaking: ' + error.message, 'error');
+                    addLogEntry('Error force speaking: ' + error.message, 'error');
+                });
+            }
+        }
+
+        function takeScreenshot() {
+            addLogEntry('Taking screenshot...', 'info');
+            
+            const link = document.createElement('a');
+            link.href = '/api/screenshot?' + new Date().getTime();
+            link.download = 'i-sight-screenshot-' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.jpg';
+            link.click();
+            
+            showNotification('Screenshot downloaded!', 'success');
+            addLogEntry('Screenshot taken', 'success');
+        }
+
+        function updateDetectionData() {
+            fetch('/api/latest-detection')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.timestamp) {
+                        // Update real-time data
+                        document.getElementById('frameNumber').textContent = data.frame_number || 0;
+                        document.getElementById('processingTime').textContent = (data.processing_time || 0).toFixed(3);
+                        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+                        // Update detection zones
+                        updateDetectionZones(data.faces || []);
+
+                        // Update detection details
+                        updateDetectionDetails(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating detection data:', error);
+                });
+        }
+
+        function updateDetectionZones(faces) {
+            const zones = document.querySelectorAll('.zone');
+            const activeZones = faces.map(face => face.zone);
+            
+            zones.forEach((zone, index) => {
+                if (activeZones.includes(index)) {
+                    zone.className = 'zone zone-active';
+                } else {
+                    zone.className = 'zone zone-inactive';
+                }
+            });
+        }
+
+        function updateDetectionDetails(data) {
+            // Update face details
+            const faceDetails = document.getElementById('faceDetails');
+            if (data.faces && data.faces.length > 0) {
+                faceDetails.innerHTML = '<h4>👥 Active Zones:</h4>' + 
+                    data.faces.map(face => 
+                        `<div>${face.zone_name}: ${face.count} face(s)</div>`
+                    ).join('');
+            } else {
+                faceDetails.innerHTML = '<h4>👥 No faces detected</h4>';
+            }
+
+            // Update vehicle details
+            const vehicleDetails = document.getElementById('vehicleDetails');
+            if (data.vehicles && data.vehicles.length > 0) {
+                vehicleDetails.innerHTML = '<h4>🚗 Vehicles:</h4>' + 
+                    data.vehicles.map(vehicle => 
+                        `<div>${vehicle.class}: ${(vehicle.confidence * 100).toFixed(1)}%</div>`
+                    ).join('');
+            } else {
+                vehicleDetails.innerHTML = '<h4>🚗 No vehicles detected</h4>';
+            }
+
+            // Update traffic sign details
+            const trafficSignDetails = document.getElementById('trafficSignDetails');
+            if (data.traffic_signs && data.traffic_signs.length > 0) {
+                trafficSignDetails.innerHTML = '<h4>🚦 Traffic Signs:</h4>' + 
+                    data.traffic_signs.map(sign => 
+                        `<div>${sign.sign_type}: ${(sign.confidence * 100).toFixed(1)}%</div>`
+                    ).join('');
+            } else {
+                trafficSignDetails.innerHTML = '<h4>🚦 No traffic signs detected</h4>';
+            }
+        }
+
+        function startStatusUpdates() {
+            // Update status every 2 seconds
+            setInterval(updateStatus, 2000);
+            
+            // Update detection data every 1 second
+            setInterval(updateDetectionData, 1000);
+        }
+
+        function addLogEntry(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                addLogEntry('Page hidden - reducing update frequency', 'warning');
+            } else {
+                addLogEntry('Page visible - resuming normal updates', 'info');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Adjust layout if needed
+            console.log('Window resized');
+        });
+
+        // Accessibility Functions
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            
+            if (tabName === 'accessibility') {
+                speakFeedback('Accessibility mode activated. Large buttons and voice feedback enabled.');
+                updateAccessibilityStatus();
+            } else {
+                speakFeedback('Main dashboard activated.');
+            }
+        }
+
+        function speakFeedback(message) {
+            if (voiceFeedbackEnabled) {
+                // Show voice feedback
+                const feedback = document.getElementById('voiceFeedback');
+                const feedbackText = document.getElementById('voiceFeedbackText');
+                feedbackText.textContent = message;
+                feedback.classList.add('show');
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 3000);
+                
+                // Also use browser speech synthesis if available
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(message);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 0.8;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+        }
+
+        function updateAccessibilityStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update toggle states
+                    updateToggle('detectionToggle', 'detectionStatus', data.detection_running);
+                    updateToggle('voiceToggle', 'voiceStatus', data.voice_enabled);
+                    updateToggle('cameraToggle', 'cameraStatus', data.camera_connected);
+                    
+                    // Update status values
+                    document.getElementById('accessibilityFaceCount').textContent = data.face_count || 0;
+                    document.getElementById('accessibilityVehicleCount').textContent = data.vehicle_count || 0;
+                    document.getElementById('accessibilityTrafficSignCount').textContent = data.traffic_sign_count || 0;
+                    document.getElementById('accessibilityFPS').textContent = (data.fps || 0).toFixed(1);
+                })
+                .catch(error => {
+                    console.error('Error updating accessibility status:', error);
+                });
+        }
+
+        function updateToggle(toggleId, statusId, isActive) {
+            const toggle = document.getElementById(toggleId);
+            const status = document.getElementById(statusId);
+            
+            if (isActive) {
+                toggle.classList.add('active');
+                status.textContent = 'ON';
+                status.style.color = '#56ab2f';
+            } else {
+                toggle.classList.remove('active');
+                status.textContent = 'OFF';
+                status.style.color = '#666';
+            }
+        }
+
+        // Accessibility Button Functions
+        function startDetectionAccessibility() {
+            speakFeedback('Starting detection system');
+            startDetection();
+        }
+
+        function stopDetectionAccessibility() {
+            speakFeedback('Stopping detection system');
+            stopDetection();
+        }
+
+        function testVoiceAccessibility() {
+            speakFeedback('Testing voice system');
+            testVoice();
+        }
+
+        function showVoiceLogAccessibility() {
+            speakFeedback('Loading voice log');
+            showVoiceLog();
+        }
+
+        function takeScreenshotAccessibility() {
+            speakFeedback('Taking screenshot');
+            takeScreenshot();
+        }
+
+        function forceSpeakAccessibility() {
+            const message = prompt('Enter message to speak:');
+            if (message && message.trim()) {
+                speakFeedback('Force speaking: ' + message);
+                showForceSpeak();
+            }
+        }
+
+        function refreshStatusAccessibility() {
+            speakFeedback('Refreshing system status');
+            updateAccessibilityStatus();
+        }
+
+        // Toggle Functions
+        function toggleDetection() {
+            if (detectionRunning) {
+                speakFeedback('Stopping detection');
+                stopDetection();
+            } else {
+                speakFeedback('Starting detection');
+                startDetection();
+            }
+        }
+
+        function toggleVoice() {
+            voiceFeedbackEnabled = !voiceFeedbackEnabled;
+            const status = voiceFeedbackEnabled ? 'enabled' : 'disabled';
+            speakFeedback('Voice feedback ' + status);
+            updateToggle('voiceToggle', 'voiceStatus', voiceFeedbackEnabled);
+        }
+
+        function toggleCamera() {
+            // This would typically control camera feed visibility
+            speakFeedback('Camera toggle pressed');
+            // For now, just update the toggle state based on current status
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updateToggle('cameraToggle', 'cameraStatus', data.camera_connected);
+                });
+        }
+
+        // Enhanced status update for accessibility
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update main dashboard status
+                    document.getElementById('detectionStatus').textContent = 
+                        data.detection_running ? 'Running' : 'Stopped';
+                    document.getElementById('cameraStatus').textContent = 
+                        data.camera_connected ? 'Connected' : 'Disconnected';
+                    document.getElementById('voiceStatus').textContent = 
+                        data.voice_enabled ? 'Enabled' : 'Disabled';
+
+                    // Update status indicators
+                    updateStatusIndicator('detectionStatus', data.detection_running);
+                    updateStatusIndicator('cameraStatus', data.camera_connected);
+                    updateStatusIndicator('voiceStatus', data.voice_enabled);
+
+                    // Update stats
+                    document.getElementById('faceCount').textContent = data.face_count || 0;
+                    document.getElementById('vehicleCount').textContent = data.vehicle_count || 0;
+                    document.getElementById('trafficSignCount').textContent = data.traffic_sign_count || 0;
+                    document.getElementById('fpsValue').textContent = (data.fps || 0).toFixed(1);
+
+                    // Update button states
+                    document.getElementById('startBtn').disabled = data.detection_running;
+                    document.getElementById('stopBtn').disabled = !data.detection_running;
+
+                    detectionRunning = data.detection_running;
+
+                    // Update accessibility tab if it's active
+                    if (currentTab === 'accessibility') {
+                        updateAccessibilityStatus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                    addLogEntry('Error updating status: ' + error.message, 'error');
+                });
+        }
+    </script>
+</body>
+</html>

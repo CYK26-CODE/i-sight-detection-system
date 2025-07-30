@@ -1,0 +1,24 @@
+# Core dependencies
+streamlit>=1.28.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+pillow>=10.0.0
+
+# Flask (for the integrated system)
+flask>=2.3.0
+flask-cors>=4.0.0
+
+# Voice system
+pywin32>=306; sys_platform == "win32"
+pyttsx3>=2.90
+
+# Machine learning
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Additional utilities
+requests>=2.31.0
+python-dateutil>=2.8.0
+
+# For deployment
+gunicorn>=21.0.0 

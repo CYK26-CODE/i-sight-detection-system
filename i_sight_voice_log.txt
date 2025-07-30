@@ -1,0 +1,11 @@
+=== i-sight Voice Log - 2025-07-30 10:46:02 ===
+[10:46:05] TEST_SUCCESS: "Voice system ready using SAPI_COM" (Count: 1)
+[10:46:09] QUEUED: "Two people detected: one in Slight Left zone and one in Center zone" (Count: 1)
+[10:46:09] PROCESSING: "Two people detected: one in Slight Left zone and one in Center zone" (Count: 2)
+[10:46:13] COMPLETED: "Two people detected: one in Slight Left zone and one in Center zone" (Count: 3)
+[10:46:27] QUEUED: "Two people detected: one in Slight Left zone and one in Slight Right zone" (Count: 1)
+[10:46:27] PROCESSING: "Two people detected: one in Slight Left zone and one in Slight Right zone" (Count: 2)
+[10:46:31] COMPLETED: "Two people detected: one in Slight Left zone and one in Slight Right zone" (Count: 3)
+[10:46:46] QUEUED: "Two people detected: one in Far Left zone and one in Slight Right zone" (Count: 1)
+[10:46:46] PROCESSING: "Two people detected: one in Far Left zone and one in Slight Right zone" (Count: 2)
+[10:46:50] COMPLETED: "Two people detected: one in Far Left zone and one in Slight Right zone" (Count: 3)

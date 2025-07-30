@@ -1,0 +1,22 @@
+# Frontend Dependencies for Computer Vision Detection System (WebRTC-free version)
+
+# Core Streamlit
+streamlit>=1.28.0
+
+# HTTP Client
+requests>=2.31.0
+
+# Image Processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Data Processing and Visualization
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.15.0
+
+# WebSocket Client (optional)
+websockets>=11.0.0
+
+# Additional utilities
+asyncio-throttle>=1.0.0

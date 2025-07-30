@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-30T00:06:43.621592",
+  "fps": 4.79803827765427,
+  "detections": {
+    "faces": [
+      {
+        "bbox": [
+          70,
+          91,
+          92,
+          92
+        ],
+        "confidence": 0.8,
+        "class": "face"
+      }
+    ],
+    "vehicles": [],
+    "traffic_signs": [
+      {
+        "bbox": [
+          82,
+          0,
+          201,
+          235
+        ],
+        "confidence": 0.7,
+        "class": "stop_sign"
+      }
+    ],
+    "objects": []
+  },
+  "total_frames": 3
+}
