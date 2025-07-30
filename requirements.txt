@@ -21,6 +21,7 @@ pandas
 # streamlit -----------------------------------
 streamlit
 flask
+flaskcors
 
 # extras --------------------------------------
 thop  # FLOPs computation
